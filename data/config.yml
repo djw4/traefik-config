@@ -24,6 +24,14 @@ http:
         - https-redirectscheme
       tls: {}
       service: radarr
+    homebridge:
+      entryPoints: ["https"]
+      rule: "Host(`homebridge.local.dwlab.co`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: homebridge
 
   services:
     tower:
@@ -53,6 +61,15 @@ http:
           path: /ping
           interval: "60s"
           timeout: "5s"
+    homebridge:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.0.123:8581"
+        passHostHeader: true
+        # healthCheck:
+        #   path: /ping
+        #   interval: "60s"
+        #   timeout: "5s"
   middlewares:
     https-redirectscheme:
       redirectScheme:
