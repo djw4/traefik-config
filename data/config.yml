@@ -31,17 +31,28 @@ http:
         servers:
           - url: "https://tower.dwlab.co"
         passHostHeader: true
+        healthCheck:
+          path: /login
+          interval: "60s"
+          timeout: "5s"
     sonarr:
       loadBalancer:
         servers:
           - url: "http://tower.dwlab.co:8989"
         passHostHeader: true
+        healthCheck:
+          path: /ping
+          interval: "60s"
+          timeout: "5s"
     radarr:
       loadBalancer:
         servers:
           - url: "http://tower.dwlab.co:7878"
         passHostHeader: true
-
+        healthCheck:
+          path: /ping
+          interval: "60s"
+          timeout: "5s"
   middlewares:
     https-redirectscheme:
       redirectScheme:
