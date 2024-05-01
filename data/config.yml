@@ -1,0 +1,73 @@
+http:
+  routers:
+    tower:
+      entryPoints: ["http", "https"]
+      rule: "Host(`tower.local.dwlab.co`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: tower
+    sonarr:
+      entryPoints: ["http", "https"]
+      rule: "Host(`sonarr.local.dwlab.co`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: sonarr
+    radarr:
+      entryPoints: ["http", "https"]
+      rule: "Host(`radarr.local.dwlab.co`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: radarr
+
+  services:
+    tower:
+      loadBalancer:
+        servers:
+          - url: "https://tower.dwlab.co"
+        passHostHeader: true
+    sonarr:
+      loadBalancer:
+        servers:
+          - url: "http://tower.dwlab.co:8989"
+        passHostHeader: true
+    radarr:
+      loadBalancer:
+        servers:
+          - url: "http://tower.dwlab.co:7878"
+        passHostHeader: true
+
+  middlewares:
+    https-redirectscheme:
+      redirectScheme:
+        scheme: https
+        permanent: true
+    default-headers:
+      headers:
+        frameDeny: true
+        browserXssFilter: true
+        contentTypeNosniff: true
+        forceSTSHeader: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 15552000
+        customFrameOptionsValue: SAMEORIGIN
+        customRequestHeaders:
+          X-Forwarded-Proto: https
+
+    default-whitelist:
+      ipWhiteList:
+        sourceRange:
+        - "192.168.0.0/16"
+
+    secured:
+      chain:
+        middlewares:
+        - default-whitelist
+        - default-headers
+
